@@ -1,0 +1,179 @@
+1. Calculation of Max and Min of Two Numbers
+
+	max(X, Y, X) :- X >= Y.
+	max(X, Y, Y) :- X < Y.
+
+	min(X, Y, X) :- X =< Y.
+	min(X, Y, Y) :- X > Y.
+
+	?- max(100, 200, X).
+		X = 200
+
+	?- min(100, 200, X).
+		Y = 100
+
+
+2. Finding Equivalent Resistance of a Resistive Circuit
+	
+	series(X, Y, Z) :- Z is (X + Y).
+	parallel(X, Y, Z) :- Z is ((X * Y)/(X + Y)). 
+
+	?- series(2, 4, Z).
+		Z = 6
+	
+	?- parallel(10, 40, Z).
+		Z = 8
+
+
+3. Checking of horizontal and vertical line segments.
+	
+	vertical(seg(point(X,_), point(X,_))).
+	horizontal(seg(point(_,Y), point(_,Y))).
+	oblique(seg(point(X1,Y1), point(X2,Y2))) :-
+   		X1 \== X2,
+    		Y1 \== Y2.
+
+	?- vertical(seg(point(10,20), point(10,30))).
+		true
+
+	horizontal(seg(point(10,20), point(10,30))).
+		false
+
+	oblique(seg(point(10,20), point(10,30))).
+		false
+
+	oblique(seg(point(10,20), point(20,30))).
+		true
+
+	horizontal(seg(point(20,20), point(30,20))).
+		true
+
+
+4. Monkey is on floor, at door. A block is on floor, at window. Banana is hanging from roof at the middle of the room. Prolem is "How the monkey can get the banana?".
+
+5. Find all possible subsets of a given set. We shall have to define a relation subset(Set, Subset) where Set and Subset are two lists representing two sets. We would like to be able to use this relation not only to check for the subset relation, but also to generate all possible subsets of a given set.
+
+	subset([], []).
+	subset([First | Rest],[First | Sub]) :-
+		subset(Rest, Sub).
+
+	subset([First | Rest], Sub) :-
+		subset(Rest, Sub).
+
+	?- subset([1,2,3],S).
+		S = [1, 2, 3]
+		S = [1, 2]
+		S = [1, 3]
+		S = [1]
+		S = [2, 3]
+		S = [2]
+		S = [3]
+		S = []
+
+
+6. Check whether a given list is palindrome or not.
+For example:
+[m, a, d, a, m] is a palindrome list.
+
+	palindrome(List) :- list_reverse(List, List).
+	list_reverse([], []).
+	list_reverse([First | Rest], Reversed) :-
+		list_reverse(Rest, ReversedRest),
+		concatenation(ReversedRest, [First], Reversed).
+	concatenation([], L, L).
+	concatenation([X1|L1], L2, [X1|L3]) :-
+		concatenation(L1, L2, L3).
+
+	?- palindrome([r, a, c, e, c, a, r])
+		true
+
+7. Write a prolog program to sort all the elements of a list using merge sort.
+
+	mergesort([],[]).
+	mergesort([A],[A]).
+	mergesort([A,B|R],S) :-
+		split([A,B|R],L1,L2),
+		mergesort(L1,S1),
+		mergesort(L2,S2),
+		merge(S1,S2,S).
+
+	split([],[],[]).
+	split([A],[A],[]).
+	split([A, B|R], [A|Ra], [B|Rb]) :-
+		split(R,Ra,Rb).
+
+	merge(A, [], A).
+	merge([],B,B).
+	merge([A|Ra],[B|Rb],[A|M]) :-
+		A =< B, merge(Ra,[B|Rb],M).
+	merge([A|Ra],[B|Rb],[B|M]) :-
+		A > B, merge([A|Ra], Rb, M).
+
+
+	?- mergesort([5, 4, 7, 9, 1, 3, 2], S)
+		S = [1, 2, 3, 4, 5, 7, 9]
+
+8. Write a prolog program to find the reverse of a list.
+	
+	reverse([], Y, R) :-
+    		R = Y.
+	reverse([H|T] , Y, R) :-
+    		reverse(T, [H|Y], R).
+	
+	?- reverse([1,2,3,4,5], [], R)
+		R = [5, 4, 3, 2, 1]
+
+
+9. Write queries to find the following from the family database:(Create the
+database just like shown in lab)
+(a) names of families without children;
+(b) all employed children;
+(c) names of families with employed wives and unemployed husbands; (d) all
+the children whose parents differ in age by at least 15 year
+
+	family(biswas).
+	family(chatterjee).
+	family(dutta).
+	family(bose).
+	fhaswife(bose,soma).
+	fhaswife(dutta,rupa).
+	fhaswife(chatterjee,arundhati).
+	fhaswife(biswas,somashree).
+	employedw(somashree).
+	employedw(rupa).
+	fhaschild(bose,sunil).
+	fhaschild(chatterjee,ratan).
+	atleastfifteenyagediff(ratan).
+	atleastfifteenyagediff(sunil).
+
+	fhaschild(dutta,sourav).
+	employed(sourav).
+	employed(ratan).
+
+	nooffamilyhaschild(X):-family(X),not(fhaschild(X,Y)).
+	employed_child(X):-family(Y),fhaschild(Y,X),employed(X).
+	employed_wife(X):-family(Y),fhaswife(Y,X),employedw(X).
+	agediffatleast15(X):-fhaschild(Y,X),atleastfifteenyagediff(X).
+
+10. Self driving car using PROLOG
+
+	obs(tree).
+	obs(human).
+	obs(car).
+	obs(roadblock).
+	obs(redlight).
+	obs(blackbuck).
+	pc(noentry).
+	trafficlight(red).
+	light1(red).
+	trafficlight2(green).
+	light2(green).
+	trafficlight3(yellow).
+	light3(yellow).
+	
+	brakes(X) :- obs(X).
+	turnleft(X) :- pc(X).
+	acc(X) :- !,obs(X).
+	stop(X) :- trafficlight(X), light1(X).
+	move(X) :- trafficlight2(X), light2(X).
+	moveslow :- trafficlight3(X), light3(X).
